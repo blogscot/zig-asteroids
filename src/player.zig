@@ -111,8 +111,8 @@ pub fn Player() type {
             return self.lives > 0;
         }
 
-        pub fn apply_force(self: *Self, force: *Vector2d) void {
-            self.velocity = self.velocity.add(force.*);
+        pub fn apply_force(self: *Self, force: Vector2d) void {
+            self.velocity = self.velocity.add(force);
         }
 
         pub fn get_direction(self: *Self) Vector2d {
@@ -147,25 +147,25 @@ pub fn Player() type {
 
         pub fn rotate(self: *Self, degrees: f32) void {
             for (0..P_VERTS) |i| {
-                self.obj_vert[i] = Vector2d.rotate(&self.obj_vert[i], degrees);
+                self.obj_vert[i] = Vector2d.rotate(self.obj_vert[i], degrees);
             }
         }
 
-        fn limit(self: *Self, max: f32) Vector2d {
-            const magnitude = @sqrt(self.x * self.x + self.y * self.y);
-            if (magnitude() > max) {
+        fn limit_velocity(self: *Self, limit: f32) void {
+            const x = self.velocity.x;
+            const y = self.velocity.y;
+            const magnitude = @sqrt(x * x + y * y);
+            if (magnitude > limit) {
                 self.velocity = self.velocity.normalize();
-                self.velocity = self.velocity.scale(max);
-                return self.velocity;
+                self.velocity = self.velocity.scale(limit);
             }
         }
 
         pub fn update(self: *Self) void {
-            self.velocity.limit(2.0);
+            self.limit_velocity(2.0);
             self.location = self.location.add(self.velocity);
 
             const translation = utils.translation(2.0, 2.0);
-
             for (0..P_VERTS) |i| {
                 self.world_vert[i] = self.obj_vert[i].add(self.location);
                 self.world_vert[i] = self.world_vert[i].add(translation);

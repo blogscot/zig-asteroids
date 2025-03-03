@@ -1,3 +1,4 @@
+const std = @import("std");
 const rl = @import("raylib");
 const Vector2d = rl.Vector2;
 
@@ -7,6 +8,8 @@ const playr = @import("player.zig");
 pub fn main() anyerror!void {
     // Initialization
     //--------------------------------------------------------------------------------------
+
+    const rotation_angle: f32 = 4.0 * std.math.pi / 180.0;
 
     var player = playr.Player().init();
     var quit = false;
@@ -32,11 +35,24 @@ pub fn main() anyerror!void {
         if (rl.isKeyDown(rl.KeyboardKey.q)) {
             quit = true;
         }
+        if (rl.isKeyDown(rl.KeyboardKey.right)) {
+            player.rotate(rotation_angle);
+        }
+        if (rl.isKeyDown(rl.KeyboardKey.left)) {
+            player.rotate(-rotation_angle);
+        }
+        if (rl.isKeyDown(rl.KeyboardKey.up)) {
+            var thrust = player.get_direction();
+            thrust = thrust.scale(0.06);
+            player.apply_force(thrust);
+        }
 
         rl.clearBackground(rl.Color.black);
 
         player.visible = true;
         player.draw();
+        player.update();
+        player.bounds();
 
         //----------------------------------------------------------------------------------
     }
