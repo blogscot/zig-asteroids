@@ -1,4 +1,3 @@
-const rendr = @import("renderer.zig");
 const utils = @import("utils.zig");
 
 const rl = @import("raylib");
@@ -180,7 +179,7 @@ pub fn Player() type {
                     // bounds checking
                     const x = self.bullets[i].location.x;
                     const y = self.bullets[i].location.y;
-                    if (x < 0 or x > rendr.SCREEN_WIDTH or y < 0 or y > rendr.SCREEN_HEIGHT) {
+                    if (x < 0 or x > utils.SCREEN_WIDTH or y < 0 or y > utils.SCREEN_HEIGHT) {
                         self.bullets[i].alive = false;
                     }
                 }
@@ -189,8 +188,8 @@ pub fn Player() type {
 
         /// Resets the player position if it goes out of bounds.
         pub fn bounds(self: *Self) void {
-            const widthLimit = @as(f32, @floatFromInt(rendr.SCREEN_WIDTH / 2));
-            const heightLimit = @as(f32, @floatFromInt(rendr.SCREEN_HEIGHT / 2));
+            const widthLimit = @as(f32, @floatFromInt(utils.SCREEN_WIDTH / 2));
+            const heightLimit = @as(f32, @floatFromInt(utils.SCREEN_HEIGHT / 2));
 
             if (self.location.x < -widthLimit) {
                 self.location.x = widthLimit;

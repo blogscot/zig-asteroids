@@ -2,7 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const Vector2d = rl.Vector2;
 
-const rendr = @import("renderer.zig");
+const utils = @import("utils.zig");
 const playr = @import("player.zig");
 
 pub fn main() anyerror!void {
@@ -16,7 +16,7 @@ pub fn main() anyerror!void {
 
     var quit = false;
 
-    rl.initWindow(rendr.SCREEN_WIDTH, rendr.SCREEN_HEIGHT, "Asteroids");
+    rl.initWindow(utils.SCREEN_WIDTH, utils.SCREEN_HEIGHT, "Asteroids");
     defer rl.closeWindow(); // Close window and OpenGL context
 
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
@@ -53,6 +53,8 @@ pub fn main() anyerror!void {
         }
 
         rl.clearBackground(rl.Color.black);
+
+        rl.drawText("Score:   0", 540, 10, 14, rl.Color.light_gray);
 
         for (0..player.lives) |i| {
             lives.icons[i].draw();

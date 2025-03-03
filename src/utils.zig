@@ -1,9 +1,11 @@
 const std = @import("std");
-const rendr = @import("renderer.zig");
 const rl = @import("raylib");
 
+pub const SCREEN_WIDTH = 640;
+pub const SCREEN_HEIGHT = 480;
+
 pub fn translation(x: f32, y: f32) rl.Vector2 {
-    return rl.Vector2{ .x = rendr.SCREEN_WIDTH / x, .y = rendr.SCREEN_HEIGHT / y };
+    return rl.Vector2{ .x = SCREEN_WIDTH / x, .y = SCREEN_HEIGHT / y };
 }
 
 pub fn calc_distance(a: anytype, b: anytype) @TypeOf(a + b) {
