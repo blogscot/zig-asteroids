@@ -12,6 +12,8 @@ pub fn main() anyerror!void {
     const rotation_angle: f32 = 4.0 * std.math.pi / 180.0;
 
     var player = playr.Player().init();
+    var lives = playr.Lives().init();
+
     var quit = false;
 
     rl.initWindow(rendr.SCREEN_WIDTH, rendr.SCREEN_HEIGHT, "Asteroids");
@@ -46,8 +48,15 @@ pub fn main() anyerror!void {
             thrust = thrust.scale(0.06);
             player.apply_force(thrust);
         }
+        if (rl.isKeyPressed(rl.KeyboardKey.space)) {
+            player.shoot_bullet();
+        }
 
         rl.clearBackground(rl.Color.black);
+
+        for (0..player.lives) |i| {
+            lives.icons[i].draw();
+        }
 
         player.visible = true;
         player.draw();

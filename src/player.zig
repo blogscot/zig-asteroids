@@ -126,11 +126,13 @@ pub fn Player() type {
             }
 
             // draw bullets
-            // for (0..NUM_BULLETS) |i| {
-            //     if (self.bullets[i].alive) {
-            //         rendr.draw_pixel(pixel_buffer, self.bullets[i].location.x, self.bullets[i].location.y, rendr.WHITE);
-            //     }
-            // }
+            for (0..NUM_BULLETS) |i| {
+                if (self.bullets[i].alive) {
+                    const x = @as(i32, @intFromFloat(self.bullets[i].location.x));
+                    const y = @as(i32, @intFromFloat(self.bullets[i].location.y));
+                    rl.drawPixel(x, y, rl.Color.white);
+                }
+            }
         }
 
         pub fn shoot_bullet(self: *Self) void {
@@ -139,7 +141,7 @@ pub fn Player() type {
                     self.bullets[i].alive = true;
                     self.bullets[i].location = self.world_vert[0];
                     self.bullets[i].velocity = self.get_direction();
-                    self.bullets[i].velocity.mul(4.1);
+                    self.bullets[i].velocity = self.bullets[i].velocity.scale(4.1);
                     break; // only one bullet at a time
                 }
             }
@@ -172,17 +174,17 @@ pub fn Player() type {
             }
 
             // update bullets
-            // for (0..NUM_BULLETS) |i| {
-            //     if (self.bullets[i].alive) {
-            //         self.bullets[i].location.add(&self.bullets[i].velocity);
-            //         // bounds checking
-            //         const x = self.bullets[i].location.x;
-            //         const y = self.bullets[i].location.y;
-            //         if (x < 0 or x > rendr.SCREEN_WIDTH or y < 0 or y > rendr.SCREEN_HEIGHT) {
-            //             self.bullets[i].alive = false;
-            //         }
-            //     }
-            // }
+            for (0..NUM_BULLETS) |i| {
+                if (self.bullets[i].alive) {
+                    self.bullets[i].location = self.bullets[i].location.add(self.bullets[i].velocity);
+                    // bounds checking
+                    const x = self.bullets[i].location.x;
+                    const y = self.bullets[i].location.y;
+                    if (x < 0 or x > rendr.SCREEN_WIDTH or y < 0 or y > rendr.SCREEN_HEIGHT) {
+                        self.bullets[i].alive = false;
+                    }
+                }
+            }
         }
 
         /// Resets the player position if it goes out of bounds.
