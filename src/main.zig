@@ -4,6 +4,7 @@ const Vector2d = rl.Vector2;
 
 const utils = @import("utils.zig");
 const playr = @import("player.zig");
+const aster = @import("asteroids.zig");
 
 pub fn main() anyerror!void {
     // Initialization
@@ -12,6 +13,7 @@ pub fn main() anyerror!void {
     const rotation_angle: f32 = 4.0 * std.math.pi / 180.0;
 
     var player = playr.Player().init();
+    var asteroids = aster.Asteroids().init();
     var lives = playr.Lives().init();
 
     var quit = false;
@@ -59,6 +61,10 @@ pub fn main() anyerror!void {
         for (0..player.lives) |i| {
             lives.icons[i].draw();
         }
+
+        asteroids.update();
+        asteroids.draw();
+        asteroids.bounds();
 
         player.visible = true;
         player.draw();

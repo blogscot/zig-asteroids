@@ -163,7 +163,7 @@ pub fn Player() type {
         }
 
         pub fn update(self: *Self) void {
-            self.limit_velocity(2.0);
+            self.limit_velocity(1.4);
             self.location = self.location.add(self.velocity);
 
             const translation = utils.translation(2.0, 2.0);
