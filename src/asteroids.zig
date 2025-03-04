@@ -7,10 +7,10 @@ const NUM_ASTEROIDS: u32 = 45;
 const INIT_ASTEROIDS: u32 = 3;
 
 const VERTS: u32 = 11;
-pub const Sizes = enum {
-    small,
-    medium,
-    large,
+pub const Sizes = enum(u32) {
+    small = 20,
+    medium = 10,
+    large = 5,
 
     pub fn smaller(size: Sizes) Sizes {
         switch (size) {

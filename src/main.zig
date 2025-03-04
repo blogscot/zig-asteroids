@@ -19,6 +19,9 @@ pub fn main() anyerror!void {
     var fired = false;
     var quit = false;
     var level: u32 = 0;
+    const buffer_size = 20;
+    var buffer: [buffer_size]u8 = undefined;
+    var score: u32 = 0;
 
     rl.initWindow(utils.SCREEN_WIDTH, utils.SCREEN_HEIGHT, "Asteroids");
     defer rl.closeWindow(); // Close window and OpenGL context
@@ -62,7 +65,8 @@ pub fn main() anyerror!void {
 
         rl.clearBackground(rl.Color.black);
 
-        rl.drawText("Score:   0", 540, 10, 14, rl.Color.light_gray);
+        const output = std.fmt.bufPrintZ(&buffer, "Score: {d:0>5}", .{score}) catch unreachable;
+        rl.drawText(output, 530, 10, 15, rl.Color.light_gray);
 
         if (asteroids.cleared() and !fired) {
             fired = true;
@@ -109,6 +113,7 @@ pub fn main() anyerror!void {
                 const world = player.bullets[i].location.add(translation);
                 if (asteroids.collision(world, 1)) |index| {
                     var asteroid = asteroids.get_asteroid(index);
+                    score += @intFromEnum(asteroid.size);
                     asteroid.alive = false;
                     player.bullets[i].alive = false;
                     if (asteroid.size != aster.Sizes.small) {
