@@ -6,22 +6,39 @@ const utils = @import("utils.zig");
 const playr = @import("player.zig");
 const aster = @import("asteroids.zig");
 
+const GameState = struct {
+    player: *playr.Player(),
+    asteroids: *aster.Asteroids(),
+    lives: *playr.Lives(),
+    score: *u32,
+    level: *u32,
+};
+
 pub fn main() anyerror!void {
     // Initialization
     //--------------------------------------------------------------------------------------
 
     const rotation_angle: f32 = 4.0 * std.math.pi / 180.0;
 
+    // Game state
     var player = playr.Player().init();
     var asteroids = aster.Asteroids().init();
     var lives = playr.Lives().init();
+    var score: u32 = 0;
+    var level: u32 = 0;
+
+    var game_state = GameState{
+        .player = &player,
+        .asteroids = &asteroids,
+        .lives = &lives,
+        .score = &score,
+        .level = &level,
+    };
 
     var fired = false;
     var quit = false;
-    var level: u32 = 0;
     const buffer_size = 20;
     var buffer: [buffer_size]u8 = undefined;
-    var score: u32 = 0;
 
     rl.initWindow(utils.SCREEN_WIDTH, utils.SCREEN_HEIGHT, "Asteroids");
     defer rl.closeWindow(); // Close window and OpenGL context
@@ -58,7 +75,7 @@ pub fn main() anyerror!void {
         if (!player.is_alive() and rl.isKeyPressed(rl.KeyboardKey.r)) {
             if (!fired) {
                 fired = true;
-                var thread = try std.Thread.spawn(.{}, restart_game, .{ &asteroids, &player, &lives, &fired });
+                var thread = try std.Thread.spawn(.{}, restart_game, .{ &game_state, &fired });
                 thread.detach();
             }
         }
@@ -127,10 +144,12 @@ pub fn main() anyerror!void {
     }
 }
 
-fn restart_game(asteroids: *aster.Asteroids(), player: *playr.Player(), lives: *playr.Lives(), fired: *bool) void {
-    asteroids.* = aster.Asteroids().init();
-    player.* = playr.Player().init();
-    lives.* = playr.Lives().init();
+fn restart_game(state: *GameState, fired: *bool) void {
+    state.player.* = playr.Player().init();
+    state.asteroids.* = aster.Asteroids().init();
+    state.lives.* = playr.Lives().init();
+    state.score.* = 0;
+    state.level.* = 0;
     fired.* = false;
 }
 
