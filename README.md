@@ -51,4 +51,4 @@ The directory structure is as follows:
 
 ## Tool Versions
 
- + Zig version 0.14-dev.+
+ + Zig version 0.14.0
