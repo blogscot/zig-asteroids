@@ -51,4 +51,5 @@ The directory structure is as follows:
 
 ## Tool Versions
 
+ + Raylib version 5.5
  + Zig version 0.14.0

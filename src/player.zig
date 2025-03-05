@@ -4,7 +4,7 @@ const rl = @import("raylib");
 const Vector2d = rl.Vector2;
 
 const P_VERTS: u32 = 3;
-const NUM_LIVES: u32 = 3;
+pub const NUM_LIVES: u32 = 3;
 const NUM_BULLETS: u32 = 3;
 
 const Bullet = struct {

@@ -16,7 +16,7 @@ const GameState = struct {
 
 pub fn main() anyerror!void {
     // Initialization
-    //--------------------------------------------------------------------------------------
+    //----------------------------------------------------------------
 
     const rotation_angle: f32 = 4.0 * std.math.pi / 180.0;
 
@@ -26,6 +26,9 @@ pub fn main() anyerror!void {
     var lives = playr.Lives().init();
     var score: u32 = 0;
     var level: u32 = 0;
+
+    var show_start_msg: bool = true;
+    player.lives = 0;
 
     var game_state = GameState{
         .player = &player,
@@ -39,9 +42,15 @@ pub fn main() anyerror!void {
     var quit = false;
     const buffer_size = 20;
     var buffer: [buffer_size]u8 = undefined;
+    const translation = utils.translation(-2.0, -2.0);
 
     rl.initWindow(utils.SCREEN_WIDTH, utils.SCREEN_HEIGHT, "Asteroids");
     defer rl.closeWindow(); // Close window and OpenGL context
+
+    const font1 = try rl.loadFont("resources/fonts/mecha.png");
+    defer rl.unloadFont(font1);
+    const font2 = try rl.loadFont("resources/fonts/setback.png");
+    defer rl.unloadFont(font2);
 
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -79,11 +88,15 @@ pub fn main() anyerror!void {
                 thread.detach();
             }
         }
+        if (show_start_msg and rl.isKeyPressed(rl.KeyboardKey.s)) {
+            show_start_msg = false;
+            player.lives = playr.NUM_LIVES;
+        }
 
         rl.clearBackground(rl.Color.black);
 
-        const output = std.fmt.bufPrintZ(&buffer, "Score: {d:0>5}", .{score}) catch unreachable;
-        rl.drawText(output, 530, 10, 15, rl.Color.light_gray);
+        const scoreText = std.fmt.bufPrintZ(&buffer, "{d:0>5}", .{score}) catch unreachable;
+        rl.drawTextEx(font1, scoreText, .{ .x = 595.0, .y = 10.0 }, 16, 2, rl.Color.light_gray);
 
         if (asteroids.cleared() and !fired) {
             fired = true;
@@ -116,13 +129,17 @@ pub fn main() anyerror!void {
                 }
             }
         } else {
-            rl.drawText("Game Over!", utils.SCREEN_WIDTH / 2 - 60, utils.SCREEN_HEIGHT / 2 - 60, 20, rl.Color.light_gray);
-            rl.drawText("Press R to restart", utils.SCREEN_WIDTH / 2 - 100, utils.SCREEN_HEIGHT / 2 - 20, 20, rl.Color.light_gray);
+            const width = utils.SCREEN_WIDTH / 2;
+            const height = utils.SCREEN_HEIGHT / 2;
+            if (show_start_msg) {
+                rl.drawTextEx(font2, "Press S to start", .{ .x = width - 110, .y = height - 40 }, 24, 2, rl.Color.light_gray);
+            } else {
+                rl.drawTextEx(font2, "Game Over!", .{ .x = width - 65, .y = height - 60 }, 24, 2, rl.Color.light_gray);
+                rl.drawTextEx(font2, "Press R to restart", .{ .x = width - 105, .y = height - 20 }, 20, 2, rl.Color.light_gray);
+            }
         }
 
         // check for bullets collision
-        const translation = utils.translation(-2.0, -2.0);
-
         for (0..player.bullets.len) |i| {
             if (player.bullets[i].is_alive()) {
                 // convert bullet screen space location to world space to compare
