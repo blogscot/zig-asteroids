@@ -8,9 +8,9 @@ In an earlier version, I ported a C implementation of the game which used SDL2, 
 
 ## Possible future features
 
- * add scoring
+ * ~add scoring~ done
  * add sound effects
- * add start screen
+ * ~add start screen~ done
  * add high score screen
 
 ## Building the game
@@ -39,12 +39,13 @@ The directory structure is as follows:
 ```
 
 ## Controls
+* s starts the game
+* r restarts the game
 * left arrow to rotate left
 * right arrow to rotate right
-* up arrow to apply thrust in the direction you are pointing
-* space to shoot a bullet
-* space restarts the game
-* ESC to exit game
+* up arrow to apply thrust
+* space to shoot
+* ESC to exit
 
 ## Images
 ![animation](https://i.imgur.com/vgPzgha.gif)
