@@ -14,6 +14,8 @@ const GameState = struct {
     level: *u32,
 };
 
+const scores_file = ".scores.dat";
+
 pub fn main() anyerror!void {
     // Initialization
     //----------------------------------------------------------------
@@ -51,6 +53,9 @@ pub fn main() anyerror!void {
     defer rl.unloadFont(font1);
     const font2 = try rl.loadFont("resources/fonts/setback.png");
     defer rl.unloadFont(font2);
+
+    var high_score = try load_high_scores();
+    std.log.info("Loaded high score: {d}", .{high_score});
 
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -134,8 +139,14 @@ pub fn main() anyerror!void {
             if (show_start_msg) {
                 rl.drawTextEx(font2, "Press S to start", .{ .x = width - 110, .y = height - 40 }, 24, 2, rl.Color.light_gray);
             } else {
+                if (score > high_score) {
+                    try save_high_scores(score);
+                    high_score = score;
+                }
                 rl.drawTextEx(font2, "Game Over!", .{ .x = width - 65, .y = height - 60 }, 24, 2, rl.Color.light_gray);
-                rl.drawTextEx(font2, "Press R to restart", .{ .x = width - 105, .y = height - 20 }, 20, 2, rl.Color.light_gray);
+                const highScoreText = std.fmt.bufPrintZ(&buffer, "High Score - {d:0>5}", .{high_score}) catch unreachable;
+                rl.drawTextEx(font2, highScoreText, .{ .x = width - 120, .y = height - 20 }, 24, 2, rl.Color.light_gray);
+                rl.drawTextEx(font2, "Press R to restart", .{ .x = width - 105, .y = height + 20 }, 20, 2, rl.Color.light_gray);
             }
         }
 
@@ -174,4 +185,21 @@ fn respawn(asteroids: *aster.Asteroids(), fired: *bool, level: u32) void {
     rl.waitTime(2);
     asteroids.reset(level);
     fired.* = false;
+}
+
+fn load_high_scores() !u32 {
+    const high_score = if (rl.fileExists(scores_file)) blk: {
+        const data = try rl.loadFileData(scores_file);
+        defer rl.unloadFileData(data);
+        break :blk std.mem.bytesToValue(u32, data);
+    } else 0;
+    return high_score;
+}
+
+fn save_high_scores(score: u32) !void {
+    const bytes = &std.mem.toBytes(score);
+    const result = rl.saveFileData(scores_file, @constCast(@ptrCast(bytes)));
+    if (!result) {
+        std.log.warn("Failed to save high scores", .{});
+    }
 }
