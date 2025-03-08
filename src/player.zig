@@ -134,16 +134,17 @@ pub fn Player() type {
             }
         }
 
-        pub fn shoot_bullet(self: *Self) void {
+        pub fn shoot_bullet(self: *Self) bool {
             for (0..NUM_BULLETS) |i| {
                 if (!self.bullets[i].alive) {
                     self.bullets[i].alive = true;
                     self.bullets[i].location = self.world_vert[0];
                     self.bullets[i].velocity = self.get_direction();
                     self.bullets[i].velocity = self.bullets[i].velocity.scale(4.1);
-                    break; // only one bullet at a time
+                    return true; // only one bullet at a time
                 }
             }
+            return false;
         }
 
         pub fn rotate(self: *Self, degrees: f32) void {

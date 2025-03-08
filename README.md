@@ -9,7 +9,7 @@ In an earlier version, I ported a C implementation of the game which used SDL2, 
 ## Possible future features
 
  * ~add scoring~ done
- * add sound effects
+ * ~add sound effects~ done
  * ~add start screen~ done
  * add high score screen
 
@@ -52,5 +52,5 @@ The directory structure is as follows:
 
 ## Tool Versions
 
- + Raylib version 5.5
+ + Raylib version 5.6
  + Zig version 0.14.0

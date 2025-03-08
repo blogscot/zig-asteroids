@@ -49,6 +49,22 @@ pub fn main() anyerror!void {
     rl.initWindow(utils.SCREEN_WIDTH, utils.SCREEN_HEIGHT, "Asteroids");
     defer rl.closeWindow(); // Close window and OpenGL context
 
+    // Audio
+    rl.initAudioDevice();
+    defer rl.closeAudioDevice();
+
+    const fxPew: rl.Sound = try rl.loadSound("resources/sounds/Pew.ogg");
+    defer rl.unloadSound(fxPew);
+    const fxAcceleration: rl.Sound = try rl.loadSound("resources/sounds/Acceleration.ogg");
+    defer rl.unloadSound(fxAcceleration);
+    const fxExplosion: rl.Sound = try rl.loadSound("resources/sounds/Explosion.ogg");
+    defer rl.unloadSound(fxExplosion);
+    const fxSmallExplosion: rl.Sound = try rl.loadSound("resources/sounds/SmallExplosion.ogg");
+    defer rl.unloadSound(fxSmallExplosion);
+    const fxGameOver: rl.Sound = try rl.loadSound("resources/sounds/GameOver.mp3");
+    defer rl.unloadSound(fxGameOver);
+
+    // Fonts
     const font1 = try rl.loadFont("resources/fonts/mecha.png");
     defer rl.unloadFont(font1);
     const font2 = try rl.loadFont("resources/fonts/setback.png");
@@ -79,12 +95,15 @@ pub fn main() anyerror!void {
             player.rotate(-rotation_angle);
         }
         if (rl.isKeyDown(rl.KeyboardKey.up)) {
+            rl.playSound(fxAcceleration);
             var thrust = player.get_direction();
             thrust = thrust.scale(0.06);
             player.apply_force(thrust);
         }
         if (rl.isKeyPressed(rl.KeyboardKey.space)) {
-            player.shoot_bullet();
+            if (player.shoot_bullet()) {
+                rl.playSound(fxPew);
+            }
         }
         if (!player.is_alive() and rl.isKeyPressed(rl.KeyboardKey.r)) {
             if (!fired) {
@@ -127,6 +146,11 @@ pub fn main() anyerror!void {
                 // check for player collision
                 if (asteroids.collision(player.location, player.hit_radius)) |_| {
                     player.death();
+                    if (player.lives == 0) {
+                        rl.playSound(fxGameOver);
+                    } else {
+                        rl.playSound(fxExplosion);
+                    }
                 }
             } else {
                 if (asteroids.is_area_clear(player.hit_radius * 5)) {
@@ -157,6 +181,7 @@ pub fn main() anyerror!void {
                 // with asteroids worlds space to detect a collision
                 const world = player.bullets[i].location.add(translation);
                 if (asteroids.collision(world, 1)) |index| {
+                    rl.playSound(fxSmallExplosion);
                     var asteroid = asteroids.get_asteroid(index);
                     score += @intFromEnum(asteroid.size);
                     asteroid.alive = false;
